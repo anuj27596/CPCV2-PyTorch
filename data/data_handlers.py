@@ -45,7 +45,13 @@ aug = {
         "std": [0.29828647, 0.20048243, 0.15065953],
         "bw_mean": [0.28052062],
         "bw_std": [0.22027038],
-    }
+    },
+    "bloodmnist": {
+        "mean": [0.7943478, 0.659659, 0.6961932],
+        "std": [0.21563025, 0.24160342, 0.11788896],
+        "bw_mean": [0.7041403],
+        "bw_std": [0.21754295],
+    },
 }
 
 # Get transformations that are applied to "entire" image
@@ -378,7 +384,7 @@ def calculate_normalization(dataset):
         # [0.5070746, 0.48654896, 0.44091788] [0.26733422, 0.25643846, 0.27615058]
         # [0.48748648] [0.25063065]
 
-    elif dataset in ("breastmnist", "retinamnist"):
+    elif "mnist" in dataset:
         data_path = os.path.join("data", dataset)
         DataClass = getattr(medmnist, medmnist.INFO[dataset]['python_class'])
 
@@ -410,6 +416,10 @@ def calculate_normalization(dataset):
         # [0.39838937, 0.24472676, 0.15575323] [0.29828647, 0.20048243, 0.15065953]
         # [0.28052062] [0.22027038]
 
+        # bloodmnist
+        # [0.7943478, 0.659659, 0.6961932] [0.21563025, 0.24160342, 0.11788896]
+        # [0.7041403] [0.21754295]
+
     else:
         raise Exception("Not a valid dataset choice")
 
@@ -422,4 +432,5 @@ if __name__ == "__main__":
     # calculate_normalization("cifar10")
     # calculate_normalization("cifar100")
     # calculate_normalization("breastmnist")
-    calculate_normalization("retinamnist")
+    # calculate_normalization("retinamnist")
+    calculate_normalization("bloodmnist")

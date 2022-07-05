@@ -1,8 +1,7 @@
 #!/bin/bash
 
 python extract.py \
-    --dataset breastmnist \
-    --model_name_ext breastmnist \
+    --dataset breastmnist --model_name_ext breastmnist \
     --epochs 20 \
     --crop 24-0 \
     --encoder resnet18 \
@@ -15,8 +14,7 @@ python extract.py \
     # --fully_supervised \
 
 # python extract.py \
-#     --dataset retinamnist \
-#     --model_name_ext retinamnist \
+#     --dataset retinamnist --model_name_ext retinamnist \
 #     --crop 24-0 \
 #     --encoder resnet18 \
 #     --norm layer \

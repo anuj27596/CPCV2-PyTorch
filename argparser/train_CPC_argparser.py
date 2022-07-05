@@ -40,6 +40,8 @@ def argparser():
         args.num_classes = 2
     elif args.dataset == "retinamnist":
         args.num_classes = 5
+    elif args.dataset == "bloodmnist":
+        args.num_classes = 8
     else:
         raise Exception("Invalid Dataset Input")
 
@@ -63,7 +65,7 @@ def argparser():
             args.crop = "64-0"
         elif args.dataset in ("cifar10", "cifar100"):
             args.crop = "32-4" 
-        elif args.dataset in ("breastmnist", "retinamnist"):
+        elif "mnist" in args.dataset:
             args.crop = "24-0" 
     crop_parameters = args.crop.split("-")
     args.crop_size = int(crop_parameters[0])

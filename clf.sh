@@ -1,8 +1,7 @@
 #!/bin/bash
 
 python train_classifier.py \
-    --dataset breastmnist \
-    --model_name_ext breastmnist \
+    --dataset breastmnist --model_name_ext breastmnist \
     --epochs 20 \
     --crop 24-0 \
     --encoder resnet18 \
@@ -15,8 +14,7 @@ python train_classifier.py \
     # --fully_supervised \
 
 # python train_classifier.py \
-#     --dataset retinamnist \
-#     --model_name_ext retinamnist \
+#     --dataset retinamnist --model_name_ext retinamnist \
 #     --epochs 20 \
 #     --crop 24-0 \
 #     --encoder resnet18 \

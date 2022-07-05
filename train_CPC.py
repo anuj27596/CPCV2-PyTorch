@@ -141,7 +141,7 @@ if __name__ == "__main__":
         unsupervised_loader, _, _ = get_cifar10_dataloader(args)
     elif args.dataset == "cifar100":
         unsupervised_loader, _, _ = get_cifar100_dataloader(args)
-    elif args.dataset in ("breastmnist", "retinamnist"):
+    elif "mnist" in args.dataset:
         unsupervised_loader, _, _ = get_medmnist_dataloader(args)
 
     # Train the network

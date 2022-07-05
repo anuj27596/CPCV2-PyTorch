@@ -56,7 +56,7 @@ if __name__ == "__main__":
         _, train_loader, test_loader = get_cifar10_dataloader(args)
     elif args.dataset == "cifar100":
         _, train_loader, test_loader = get_cifar100_dataloader(args)
-    elif args.dataset in ("breastmnist", "retinamnist"):
+    elif "mnist" in args.dataset:
         _, train_loader, test_loader = get_medmnist_dataloader(args)
 
     # Define network and optimizer for given train_selection
