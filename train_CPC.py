@@ -88,6 +88,7 @@ def distribute_over_GPUs(args, net):
 
 def save(net, epochs):
     saveNet = net.module  # unwrap DataParallel
+    os.makedirs(os.path.join("TrainedModels", args.dataset), exist_ok=True)
     torch.save(saveNet.state_dict(),
                f"{cpc_path}_{args.encoder}_crop{args.crop}{colour}_grid{args.grid_size}_{args.norm}Norm_{args.pred_directions}dir_aug{args.patch_aug}_{epochs}{args.model_name_ext}.pt")
     torch.save(saveNet.enc.state_dict(),
@@ -120,8 +121,9 @@ if __name__ == "__main__":
     # Define CPC Network
     net = CPC(enc, ar, args.pred_directions, args.pred_steps, args.neg_samples)
     if args.trained_epochs:
-        net.load_state_dict(torch.load(
-            f"{cpc_path}_{args.encoder}_crop{args.crop}{colour}_grid{args.grid_size}_{args.norm}Norm_{args.pred_directions}dir_aug{args.patch_aug}_{args.trained_epochs}{args.model_name_ext}.pt"))
+        load_path = f"{cpc_path}_{args.encoder}_crop{args.crop}{colour}_grid{args.grid_size}_{args.norm}Norm_{args.pred_directions}dir_aug{args.patch_aug}_{args.trained_epochs}{args.model_name_ext}.pt"
+        print("Loading model:", load_path)
+        net.load_state_dict(torch.load(load_path))
     
     net = distribute_over_GPUs(args, net)
 
@@ -139,6 +141,8 @@ if __name__ == "__main__":
         unsupervised_loader, _, _ = get_cifar10_dataloader(args)
     elif args.dataset == "cifar100":
         unsupervised_loader, _, _ = get_cifar100_dataloader(args)
+    elif args.dataset in ("breastmnist", "retinamnist"):
+        unsupervised_loader, _, _ = get_medmnist_dataloader(args)
 
     # Train the network
     print(f"Dataset: {args.dataset}, Encoder: {args.encoder}, Colour: {not args.gray}, Crop: {args.crop}, Grid Size: {args.grid_size}, Norm: {args.norm}, Pred Directions: {args.pred_directions}, Patch Aug: {args.patch_aug}")

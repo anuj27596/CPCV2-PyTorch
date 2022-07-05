@@ -22,6 +22,7 @@ def argparser():
     parser.add_argument('--pred_directions',  type=int,   metavar='', default=1,          help="Number of Directions that was used in CPC training")
     parser.add_argument('--test_interval',    type=int,   metavar='', default=1,          help="Interval of epochs to test at")
     parser.add_argument('--model_num',        type=str,   metavar='', default="",         help="Number of Epochs that CPC Encoder was trained for",)
+    parser.add_argument('--model_name_ext',   type=str,   metavar='', default="",         help="Added to the end of the model name")
     
     parser.add_argument('--fully_supervised', action='store_true',                        help="When set will train a fully supeverised model")
     parser.add_argument('--sched_plateau',    action='store_true',                        help="Use ReduceLROnPlateau lr scheduler")
@@ -44,6 +45,10 @@ def argparser():
         args.num_classes = 10
     elif args.dataset == "cifar100":
         args.num_classes = 100
+    elif args.dataset == "breastmnist":
+        args.num_classes = 2
+    elif args.dataset == "retinamnist":
+        args.num_classes = 5
     else:
         raise Exception("Invalid Dataset Input")
 
@@ -68,6 +73,8 @@ def argparser():
             args.crop = "64-0"
         elif args.dataset in ("cifar10", "cifar100"):
             args.crop = "32-4" 
+        elif args.dataset in ("breastmnist", "retinamnist"):
+            args.crop = "24-0" 
     crop_parameters = args.crop.split("-")
     args.crop_size = int(crop_parameters[0])
     args.padding = int(crop_parameters[1])

@@ -220,7 +220,7 @@ class PatchifyAugment(Patchify):
 
     def Posterize(self, patch):
         bits = random.randint(4, 8)  # [4,8] as in AutoSegment
-        patch = (patch * 255) // (2 ** (8 - bits)) * (2 ** (8-bits)) / 255
+        patch = torch.div((patch * 255), (2 ** (8 - bits)), rounding_mode='floor') * (2 ** (8-bits)) / 255
         return patch
         #return PIO.posterize(pil_img, bits)
 

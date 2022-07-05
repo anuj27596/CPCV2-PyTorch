@@ -86,6 +86,8 @@ class PreActResNet(nn.Module):
             self.bn1 = nn.BatchNorm2d(self.in_planes, args.norm)
             self.relu = nn.ReLU(inplace=True)
             self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+        elif self.dataset in ("breastmnist", "retinamnist"):
+            self.conv1 = nn.Conv2d(input_channels, self.in_planes, kernel_size=3, stride=1, padding=1, bias=False)
 
         # Conv Layers
         layers_array = []

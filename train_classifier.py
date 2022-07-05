@@ -21,6 +21,8 @@ from tqdm import tqdm
 # Process a batch, return accuracy and loss
 def fwd_pass(x, y, train=False):
     
+    y = y.squeeze() # TODO: verify
+
     # Run the network
     if train:
         net.zero_grad()
@@ -116,6 +118,8 @@ if __name__ == "__main__":
         _, train_loader, test_loader = get_cifar10_dataloader(args)
     elif args.dataset == "cifar100":
         _, train_loader, test_loader = get_cifar100_dataloader(args)
+    elif args.dataset in ("breastmnist", "retinamnist"):
+        _, train_loader, test_loader = get_medmnist_dataloader(args)
 
     # Define network and optimizer for given train_selection
     if not args.fully_supervised:
@@ -134,7 +138,7 @@ if __name__ == "__main__":
 
         colour = "_colour" if (not args.gray) else ""
         encoder_path = os.path.join("TrainedModels", args.dataset, "trained_encoder")
-        encoder_path = f"{encoder_path}_{args.encoder}_crop{args.crop}{colour}_grid{args.grid_size}_{args.norm}Norm_{args.pred_directions}dir_aug{args.cpc_patch_aug}_{args.model_num}.pt"
+        encoder_path = f"{encoder_path}_{args.encoder}_crop{args.crop}{colour}_grid{args.grid_size}_{args.norm}Norm_{args.pred_directions}dir_aug{args.cpc_patch_aug}_{args.model_num}{args.model_name_ext}.pt"
         
         net.load_state_dict(torch.load(encoder_path))
         net.to(args.device)
