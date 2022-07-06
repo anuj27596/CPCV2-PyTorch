@@ -48,6 +48,8 @@ def fwd_pass(x, y, train=False):
 
 
 def train():
+    score_file = open(f'temp/multi/{args.dataset}-{"sup" if args.fully_supervised else "cpc"}.txt', 'a')
+
     best_acc = 0
     best_epoch = 0
     for epoch in range(1, args.epochs+1):
@@ -76,6 +78,7 @@ def train():
             print(f"Epoch: {epoch}/{args.epochs} (lr={lr})\n"
                   f"Train: {epoch_loss:.4f}, {epoch_acc*100:.2f}%\n"
                   f"Test:  {test_loss:.4f}, {test_acc*100:.2f}%")
+            score_file.write(f"{epoch_loss:.4f} {epoch_acc*100:.2f}\n{test_loss:.4f} {test_acc*100:.2f}\n")
         else:
             print(f"Epoch: {epoch}/{args.epochs} (lr={lr})\n"
                   f"Train: {epoch_loss:.4f}, {epoch_acc*100:.2f}%")
@@ -93,6 +96,8 @@ def train():
             scheduler.step()
 
     print(f"Best Accuracy: {best_acc*100:.2f} - epoch {best_epoch}")
+
+    score_file.close()
 
 
 def test():

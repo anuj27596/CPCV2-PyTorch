@@ -13,8 +13,10 @@ import seaborn as sns
 
 if __name__ == '__main__':
 
-	dataset = 'retinamnist'
-	num_classes = 5
+	dataset = 'bloodmnist'
+	num_classes = 8
+	subset = False
+
 	crop = '24-0'
 	encoder = 'resnet18'
 	norm = 'layer'
@@ -22,12 +24,15 @@ if __name__ == '__main__':
 	pred_directions = '4'
 	cpc_patch_aug = 'True'
 	gray = '_colour'
-	model_num = '200'
+	model_num = '100'
 
 	df_path = f'../TrainedModels/{dataset}/trained_encoder_{encoder}_crop{crop}{gray}_grid{grid_size}_{norm}Norm_{pred_directions}dir_aug{cpc_patch_aug}_{model_num}{dataset}_vectors.csv'
 
 	df = pd.read_csv(df_path)
-	df = df[(df['label'] == 1) | (df['label'] == 2) | (df['label'] == 3) | (df['label'] == 4)]
+	if subset:
+		# df = df.iloc[np.random.choice(len(df), 2000, replace=False)]
+		df = df[(df['label'] == 0) | (df['label'] == 3) | (df['label'] == 5)]
+		# df = df[df['label'] > 0]
 
 	# X = df[map(str, range(512))].values
 	# X = (X - X.mean(axis=0)) / np.sqrt(X.var(axis=0))
@@ -35,9 +40,10 @@ if __name__ == '__main__':
 	# for i in range(512):
 	# 	df[str(i)] = X[:, i]
 
+	perp = 1000
 
 	time_start = time.time()
-	tsne = TSNE(n_components=2, verbose=1, perplexity=400, n_iter=1000)
+	tsne = TSNE(n_components=2, verbose=1, perplexity=perp, n_iter=500)
 	tsne_results = tsne.fit_transform(df[map(str, range(512))].values)
 
 	print('t-SNE done! Time elapsed: {} seconds'.format(time.time()-time_start))
@@ -49,9 +55,10 @@ if __name__ == '__main__':
 	sns.scatterplot(
 		x="tsne-2d-one", y="tsne-2d-two",
 		hue="label",
-		palette=sns.color_palette("bright", 4),
+		palette=sns.color_palette("bright", num_classes - (5 if subset else 0)),
 		data=df,
 		# legend="full",
-		alpha=0.8
+		alpha=0.75
 	)
-	plt.show()
+	plt.title(f'{dataset} - Perplexity={perp}')
+	plt.savefig(f'{dataset}-{perp}{"-a" if subset else ""}.png')
