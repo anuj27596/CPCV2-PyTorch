@@ -48,7 +48,7 @@ def fwd_pass(x, y, train=False):
 
 
 def train():
-    score_file = open(f'temp/multi/{args.dataset}-{"sup" if args.fully_supervised else "cpc"}.txt', 'a')
+    score_file = open(f'train-plots/multi/{args.dataset}-{"sup" if args.fully_supervised else "cpc"}.txt', 'a')
 
     best_acc = 0
     best_epoch = 0

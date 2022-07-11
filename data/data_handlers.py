@@ -261,6 +261,10 @@ def get_medmnist_dataloader(args):
         root=data_path, split="test", transform=transform_valid, download=args.download_dataset, as_rgb=True
     )
 
+    # # Subsetting
+    # subset_indices = lambda ds: [idx for idx, (img, label) in enumerate(ds) if label.item() > 0]
+    # unsupervised_dataset = torch.utils.data.Subset(unsupervised_dataset, subset_indices(unsupervised_dataset))
+
     # Get DataLoaders
     unsupervised_loader = torch.utils.data.DataLoader(
         unsupervised_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers,
@@ -277,7 +281,8 @@ def get_medmnist_dataloader(args):
         train_indices = indices[:train_size]
         train_sampler = torch.utils.data.sampler.SubsetRandomSampler(train_indices)
         train_loader = torch.utils.data.DataLoader(
-            unsupervised_dataset, batch_size=args.batch_size, sampler=train_sampler, num_workers=args.num_workers,
+            # unsupervised_dataset, batch_size=args.batch_size, sampler=train_sampler, num_workers=args.num_workers,
+            unsupervised_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers,
         )
     except AttributeError:  
         # args.train_size is not defined during train_CPC

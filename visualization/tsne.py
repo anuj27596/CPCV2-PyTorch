@@ -26,7 +26,7 @@ if __name__ == '__main__':
 	gray = '_colour'
 	model_num = '100'
 
-	df_path = f'../TrainedModels/{dataset}/trained_encoder_{encoder}_crop{crop}{gray}_grid{grid_size}_{norm}Norm_{pred_directions}dir_aug{cpc_patch_aug}_{model_num}{dataset}_vectors.csv'
+	df_path = f'../TrainedModels/{dataset}/trained_encoder_{encoder}_crop{crop}{gray}_grid{grid_size}_{norm}Norm_{pred_directions}dir_aug{cpc_patch_aug}_{model_num}{dataset}_vectors_unshuffled.csv'
 
 	df = pd.read_csv(df_path)
 	if subset:
@@ -61,4 +61,5 @@ if __name__ == '__main__':
 		alpha=0.75
 	)
 	plt.title(f'{dataset} - Perplexity={perp}')
-	plt.savefig(f'{dataset}-{perp}{"-a" if subset else ""}.png')
+	# plt.savefig(f'{dataset}-{perp}{"-a" if subset else ""}.png')
+	plt.show()

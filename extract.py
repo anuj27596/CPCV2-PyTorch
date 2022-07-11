@@ -34,6 +34,7 @@ def extract_vectors():
     vector_list, label_list = [], []
 
     for batch_img, batch_lbl in tqdm(train_loader, dynamic_ncols=True):
+    # for batch_img, batch_lbl in tqdm(test_loader, dynamic_ncols=True):
         batch_vectors = fwd_pass_extract(batch_img.to(args.device), batch_lbl.to(args.device))
         batch_vectors = torch.mean(batch_vectors, dim=(1, 2))
         vector_list.extend(batch_vectors.cpu().numpy())
@@ -105,7 +106,7 @@ if __name__ == "__main__":
         optimizer = optim.Adam(net.parameters(), lr=args.lr)
 
     try:
-        df_path = os.path.splitext(encoder_path)[0] + '_vectors.csv'
+        df_path = os.path.splitext(encoder_path)[0] + '_vectors_unshuffled.csv'
         df = extract_vectors()
         df.to_csv(df_path, index=False)
     except KeyboardInterrupt:
