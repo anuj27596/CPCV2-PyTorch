@@ -13,6 +13,8 @@ import medmnist
 import os
 import numpy as np
 
+from tqdm import tqdm
+
 
 aug = {
     "stl10": {
@@ -51,6 +53,12 @@ aug = {
         "std": [0.21563025, 0.24160342, 0.11788896],
         "bw_mean": [0.7041403],
         "bw_std": [0.21754295],
+    },
+    "kdr": {
+        "mean": [0.3200573763148944, 0.2241905006210954, 0.16078055994960383],
+        "std": [0.3026714224418703, 0.21879516349046732, 0.17439376177430252],
+        "bw_mean": [0.24564162391661948],
+        "bw_std": [0.23442767162386982],
     },
 }
 
@@ -264,6 +272,51 @@ def get_medmnist_dataloader(args):
     # # Subsetting
     # subset_indices = lambda ds: [idx for idx, (img, label) in enumerate(ds) if label.item() > 0]
     # unsupervised_dataset = torch.utils.data.Subset(unsupervised_dataset, subset_indices(unsupervised_dataset))
+    # test_dataset = torch.utils.data.Subset(test_dataset, subset_indices(test_dataset))
+
+    # Get DataLoaders
+    unsupervised_loader = torch.utils.data.DataLoader(
+        unsupervised_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers,
+    )
+    test_loader = torch.utils.data.DataLoader(
+        test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers
+    )
+
+    # Take subset of training data for train_classifier
+    try:
+        train_size = args.train_size
+        indices = list(range(len(unsupervised_dataset)))
+        np.random.shuffle(indices)
+        train_indices = indices[:train_size]
+        train_sampler = torch.utils.data.sampler.SubsetRandomSampler(train_indices)
+        train_loader = torch.utils.data.DataLoader(
+            # unsupervised_dataset, batch_size=args.batch_size, sampler=train_sampler, num_workers=args.num_workers,
+            unsupervised_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers,
+        )
+    except AttributeError:  
+        # args.train_size is not defined during train_CPC
+        # train_loader is not needed during train_CPC
+        train_loader = None
+
+    return (unsupervised_loader, train_loader, test_loader)
+
+
+def get_kdr_dataloader(args):
+    data_path = os.path.join("data", args.dataset)
+
+    # Define Transforms
+    transform_train = transforms.Compose(
+        [get_transforms(args, eval=False, aug=aug[args.dataset])])
+    transform_valid = transforms.Compose(
+        [get_transforms(args, eval=True, aug=aug[args.dataset])])
+
+    # Get Datasets
+    unsupervised_dataset = torchvision.datasets.ImageFolder(
+        root=data_path, transform=transform_train
+    )
+    test_dataset = torchvision.datasets.ImageFolder(
+        root=data_path, transform=transform_train
+    )
 
     # Get DataLoaders
     unsupervised_loader = torch.utils.data.DataLoader(
@@ -425,6 +478,55 @@ def calculate_normalization(dataset):
         # [0.7943478, 0.659659, 0.6961932] [0.21563025, 0.24160342, 0.11788896]
         # [0.7041403] [0.21754295]
 
+    elif dataset == "kdr":
+        data_path = os.path.join("data", "kdr")
+
+        # RGB
+        train_transform = transforms.Compose([transforms.ToTensor()])
+        train_set = torchvision.datasets.ImageFolder(root=data_path, transform=train_transform)
+
+        N = len(train_set)
+
+        train_mean = [0, 0, 0]
+        train_square_mean = [0, 0, 0]
+
+        for img, lbl in tqdm(train_set):
+            for ci in range(3):
+                train_mean[ci] += torch.mean(img[ci]).item() / N
+                train_square_mean[ci] += torch.mean(img[ci]**2).item() / N
+
+        train_std = [np.sqrt(train_square_mean[ci] - train_mean[ci]**2) for ci in range(3)]
+
+        # c1 = np.concatenate([np.asarray(train_set[i][0][0]) for i in range(len(train_set))])
+        # c2 = np.concatenate([np.asarray(train_set[i][0][1]) for i in range(len(train_set))])
+        # c3 = np.concatenate([np.asarray(train_set[i][0][2]) for i in range(len(train_set))])
+
+        # train_mean = [np.mean(c1, axis=(0, 1,)), np.mean(c2, axis=(0, 1,)), np.mean(c3, axis=(0, 1,))]
+        # train_std = [np.std(c1, axis=(0, 1)), np.std(c2, axis=(0, 1)), np.std(c3, axis=(0, 1))]
+
+        # grayscale
+        train_transform = transforms.Compose([transforms.Grayscale(), transforms.ToTensor()])
+        train_set = torchvision.datasets.ImageFolder(root=data_path, transform=train_transform)
+
+        N = len(train_set)
+
+        gray_train_mean = [0]
+        gray_train_square_mean = [0]
+
+        for img, lbl in tqdm(train_set):
+            gray_train_mean[0] += torch.mean(img[0]).item() / N
+            gray_train_square_mean[0] += torch.mean(img[0]**2).item() / N
+
+        gray_train_std = [np.sqrt(gray_train_square_mean[0] - gray_train_mean[0]**2)]
+
+        # c = np.concatenate([np.asarray(train_set[i][0][0]) for i in range(len(train_set))])
+
+        # gray_train_mean = [np.mean(c, axis=(0, 1,))]
+        # gray_train_std = [np.std(c, axis=(0, 1))]
+
+        # [0.3200573763148944, 0.2241905006210954, 0.16078055994960383] [0.3026714224418703, 0.21879516349046732, 0.17439376177430252]
+        # [0.24564162391661948] [0.23442767162386982]
+
     else:
         raise Exception("Not a valid dataset choice")
 
@@ -438,4 +540,5 @@ if __name__ == "__main__":
     # calculate_normalization("cifar100")
     # calculate_normalization("breastmnist")
     # calculate_normalization("retinamnist")
-    calculate_normalization("bloodmnist")
+    # calculate_normalization("bloodmnist")
+    calculate_normalization("kdr")

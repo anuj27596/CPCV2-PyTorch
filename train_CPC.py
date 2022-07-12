@@ -143,6 +143,8 @@ if __name__ == "__main__":
         unsupervised_loader, _, _ = get_cifar100_dataloader(args)
     elif "mnist" in args.dataset:
         unsupervised_loader, _, _ = get_medmnist_dataloader(args)
+    elif args.dataset == "kdr":
+        unsupervised_loader, _, _ = get_kdr_dataloader(args)
 
     # Train the network
     print(f"Dataset: {args.dataset}, Encoder: {args.encoder}, Colour: {not args.gray}, Crop: {args.crop}, Grid Size: {args.grid_size}, Norm: {args.norm}, Pred Directions: {args.pred_directions}, Patch Aug: {args.patch_aug}")

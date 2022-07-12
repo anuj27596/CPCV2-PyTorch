@@ -9,6 +9,7 @@ data/stl10/
 data/cifar10/
 data/cifar100/
 data/*mnist*/
+data/kdr
 TrainedModels/
 
 # Files to ignore
