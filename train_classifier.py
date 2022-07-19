@@ -48,7 +48,7 @@ def fwd_pass(x, y, train=False):
 
 
 def train():
-    score_file = open(f'train-plots/multi/{args.dataset}-{"sup" if args.fully_supervised else "cpc"}.txt', 'a')
+    score_file = open(f'train-plots/retinamnist-pipelined/{args.model_name_ext}-{"sup" if args.fully_supervised else "cpc"}-P_OR.txt', 'a')
 
     best_acc = 0
     best_epoch = 0
@@ -57,6 +57,7 @@ def train():
         epoch_acc = 0
 
         for batch_img, batch_lbl in tqdm(train_loader, dynamic_ncols=True):
+            # batch_lbl = (batch_lbl > 0).long()
             loss, acc = fwd_pass(batch_img.to(args.device), batch_lbl.to(args.device), train=True)
             epoch_loss += loss
             epoch_acc += acc
@@ -79,6 +80,7 @@ def train():
                   f"Train: {epoch_loss:.4f}, {epoch_acc*100:.2f}%\n"
                   f"Test:  {test_loss:.4f}, {test_acc*100:.2f}%")
             score_file.write(f"{epoch_loss:.4f} {epoch_acc*100:.2f}\n{test_loss:.4f} {test_acc*100:.2f}\n")
+            score_file.flush()
         else:
             print(f"Epoch: {epoch}/{args.epochs} (lr={lr})\n"
                   f"Train: {epoch_loss:.4f}, {epoch_acc*100:.2f}%")
@@ -105,6 +107,7 @@ def test():
     total_test_loss = 0
 
     for batch_img, batch_lbl in tqdm(test_loader, dynamic_ncols=True):
+        # batch_lbl = (batch_lbl > 0).long()
         loss, acc = fwd_pass(batch_img.to(args.device), batch_lbl.to(args.device), train=False)
         total_test_acc += acc
         total_test_loss += loss

@@ -27,31 +27,32 @@
 #     --num_workers 2 \
 #     # --trained_epochs 10 \
 
+python train_CPC.py \
+    --dataset bloodmnist --model_name_ext bloodmnist \
+    --epochs 100 \
+    --crop 24-0 \
+    --encoder resnet_small \
+    --norm layer \
+    --grid_size 5 \
+    --pred_steps 3 \
+    --pred_directions 4 \
+    --patch_aug \
+    --neg_samples 8 \
+    --num_workers 4 \
+    --batch_size 32 \
+    # --trained_epochs 10 \
+
 # python train_CPC.py \
-#     --dataset bloodmnist --model_name_ext bloodmnist \
-#     --epochs 100 \
-#     --crop 24-0 \
+#     --dataset kdr --model_name_ext kdr \
+#     --epochs 1 \
+#     --crop 224-16 \
 #     --encoder resnet18 \
 #     --norm layer \
-#     --grid_size 5 \
-#     --pred_steps 3 \
+#     --grid_size 7 \
+#     --pred_steps 5 \
 #     --pred_directions 4 \
 #     --patch_aug \
 #     --neg_samples 8 \
 #     --num_workers 2 \
+#     --batch_size 1 \
 #     # --trained_epochs 10 \
-
-python train_CPC.py \
-    --dataset kdr --model_name_ext kdr \
-    --epochs 1 \
-    --crop 224-16 \
-    --encoder resnet18 \
-    --norm layer \
-    --grid_size 7 \
-    --pred_steps 5 \
-    --pred_directions 4 \
-    --patch_aug \
-    --neg_samples 8 \
-    --num_workers 2 \
-    --batch_size 1 \
-    # --trained_epochs 10 \

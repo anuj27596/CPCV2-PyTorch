@@ -15,15 +15,15 @@
 
 python train_classifier.py \
     --dataset retinamnist --model_name_ext retinamnist \
-    --epochs 20 \
+    --epochs 50 \
     --crop 24-0 \
     --encoder resnet18 \
     --norm layer \
     --grid_size 5 \
     --pred_directions 4 \
     --cpc_patch_aug \
-    --model_num 200 \
-    # --fully_supervised \
+    --model_num 100 \
+    --fully_supervised \
 
 # python train_classifier.py \
 #     --dataset bloodmnist --model_name_ext bloodmnist \

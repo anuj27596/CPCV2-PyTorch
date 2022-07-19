@@ -109,7 +109,7 @@ class PreActResNet_Encoder(nn.Module):
             self.conv1 = nn.Conv2d(input_channels, self.in_planes, kernel_size=5, stride=1, padding=2, bias=bias)
         elif self.dataset[:5] == "cifar":
             self.conv1 = nn.Conv2d(input_channels, self.in_planes, kernel_size=3, stride=1, padding=1, bias=bias)
-        elif self.dataset == "imagenet":
+        elif self.dataset in ("imagenet", "kdr"):
             # Standard ResNet Structure for ImageNet
             self.conv1 = nn.Conv2d(input_channels, self.in_planes, kernel_size=7, stride=2, padding=3, bias=bias)
             self.norm1 = norm2d(self.in_planes, args.norm)
@@ -237,3 +237,6 @@ def PreActResNetN_Encoder(args, use_classifier):
         return PreActResNet92_Encoder(args, use_classifier)
     elif args.encoder == "resnet143":
         return PreActResNet143_Encoder(args, use_classifier)
+
+    elif args.encoder == "resnet_small":
+        return PreActResNet_Encoder(args, use_classifier, PreActBlock, [2, 2, 2], [16, 32, 64])

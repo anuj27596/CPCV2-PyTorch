@@ -33,12 +33,14 @@ def fwd_pass_extract(x, y):
 def extract_vectors():
     vector_list, label_list = [], []
 
-    for batch_img, batch_lbl in tqdm(train_loader, dynamic_ncols=True):
-    # for batch_img, batch_lbl in tqdm(test_loader, dynamic_ncols=True):
+    # for batch_img, batch_lbl in tqdm(train_loader, dynamic_ncols=True):
+    for batch_img, batch_lbl in tqdm(test_loader, dynamic_ncols=True):
         batch_vectors = fwd_pass_extract(batch_img.to(args.device), batch_lbl.to(args.device))
         batch_vectors = torch.mean(batch_vectors, dim=(1, 2))
         vector_list.extend(batch_vectors.cpu().numpy())
-        label_list.extend(batch_lbl.cpu().numpy().squeeze())
+
+        batch_lbl = batch_lbl.cpu().numpy()
+        label_list.extend(batch_lbl.reshape(batch_lbl.size))
 
     df = pd.DataFrame(vector_list, columns=range(vector_list[0].size))
     df['label'] = label_list
@@ -59,6 +61,8 @@ if __name__ == "__main__":
         _, train_loader, test_loader = get_cifar100_dataloader(args)
     elif "mnist" in args.dataset:
         _, train_loader, test_loader = get_medmnist_dataloader(args)
+    elif args.dataset == "kdr":
+        _, train_loader, test_loader = get_kdr_dataloader(args)
 
     # Define network and optimizer for given train_selection
     if not args.fully_supervised:
@@ -106,7 +110,7 @@ if __name__ == "__main__":
         optimizer = optim.Adam(net.parameters(), lr=args.lr)
 
     try:
-        df_path = os.path.splitext(encoder_path)[0] + '_vectors_unshuffled.csv'
+        df_path = os.path.splitext(encoder_path)[0] + '_vectors.csv'
         df = extract_vectors()
         df.to_csv(df_path, index=False)
     except KeyboardInterrupt:

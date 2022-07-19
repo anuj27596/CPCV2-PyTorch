@@ -68,7 +68,7 @@ def train():
         )
 
         # Save net at every 100th epoch
-        if epoch % 100 == 0 and epoch != args.trained_epochs+args.epochs:
+        if epoch % 50 == 0 and epoch != args.trained_epochs+args.epochs:
             save(net, epoch)
 
 

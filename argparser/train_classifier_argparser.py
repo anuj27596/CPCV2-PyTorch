@@ -51,6 +51,8 @@ def argparser():
         args.num_classes = 5
     elif args.dataset == "bloodmnist":
         args.num_classes = 8
+    elif args.dataset == "kdr":
+        args.num_classes = 5
     else:
         raise Exception("Invalid Dataset Input")
 
@@ -77,6 +79,8 @@ def argparser():
             args.crop = "32-4" 
         elif "mnist" in args.dataset:
             args.crop = "24-0" 
+        elif args.dataset == "kdr":
+            args.crop = "224-16"
     crop_parameters = args.crop.split("-")
     args.crop_size = int(crop_parameters[0])
     args.padding = int(crop_parameters[1])

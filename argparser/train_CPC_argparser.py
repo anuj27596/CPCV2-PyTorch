@@ -53,7 +53,7 @@ def argparser():
     if args.encoder not in ("resnet14", "resnet18", "resnet28", 
                             "resnet34", "resnet41", "resnet50", 
                             "resnet92", "resent101", "resnet143", 
-                            "resnet152", "mobilenetV2"
+                            "resnet152", "mobilenetV2", "resnet_small"
                             ) and args.encoder[:10] != "wideresnet":
         raise Exception("Invalid Encoder Input")
 
