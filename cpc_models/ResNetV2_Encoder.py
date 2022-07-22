@@ -115,7 +115,7 @@ class PreActResNet_Encoder(nn.Module):
             self.norm1 = norm2d(self.in_planes, args.norm)
             self.relu = nn.ReLU(inplace=True)
             self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
-        elif "mnist" in self.dataset:
+        elif "mnist" in self.dataset or self.dataset == "bloodclusters":
             self.conv1 = nn.Conv2d(input_channels, self.in_planes, kernel_size=3, stride=1, padding=1, bias=bias)
 
         # Conv layers

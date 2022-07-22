@@ -24,7 +24,7 @@ if __name__ == '__main__':
 	grid_size = '5'
 	pred_directions = '4'
 	cpc_patch_aug = 'True'
-	gray = ''#_colour'
+	gray = '_colour'
 	model_num = '100'
 
 	df_path = f'../TrainedModels/{dataset}/trained_encoder_{encoder}_crop{crop}{gray}_grid{grid_size}_{norm}Norm_{pred_directions}dir_aug{cpc_patch_aug}_{model_num}{dataset}_vectors_unshuffled.csv'
@@ -60,7 +60,7 @@ if __name__ == '__main__':
 	# # df.to_csv('bloodmnist-tsne.csv', index=False)
 
 
-	K = 16
+	K = 4
 
 	# # KMeans
 
@@ -87,7 +87,7 @@ if __name__ == '__main__':
 	df['hd-cluster'] = kmeans.labels_
 
 
-	df.to_csv('bloodmnist-gray-unshuffled-tsne-clusters.csv', index=False)
+	df.to_csv('bloodmnist-unshuffled-tsne-clusters-2.csv', index=False)
 
 	# # Plot
 

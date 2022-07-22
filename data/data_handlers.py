@@ -10,6 +10,8 @@ from data.noisy_cifar import Noisy_CIFAR10, Noisy_CIFAR100
 
 import medmnist
 
+from data.cluster_dataset import BloodMNISTClusters
+
 import os
 import numpy as np
 
@@ -49,6 +51,12 @@ aug = {
         "bw_std": [0.22027038],
     },
     "bloodmnist": {
+        "mean": [0.7943478, 0.659659, 0.6961932],
+        "std": [0.21563025, 0.24160342, 0.11788896],
+        "bw_mean": [0.7041403],
+        "bw_std": [0.21754295],
+    },
+    "bloodclusters": {
         "mean": [0.7943478, 0.659659, 0.6961932],
         "std": [0.21563025, 0.24160342, 0.11788896],
         "bw_mean": [0.7041403],
@@ -273,6 +281,53 @@ def get_medmnist_dataloader(args):
     # subset_indices = lambda ds: [idx for idx, (img, label) in enumerate(ds) if label.item() > 0]
     # unsupervised_dataset = torch.utils.data.Subset(unsupervised_dataset, subset_indices(unsupervised_dataset))
     # test_dataset = torch.utils.data.Subset(test_dataset, subset_indices(test_dataset))
+
+    # Get DataLoaders
+    unsupervised_loader = torch.utils.data.DataLoader(
+        unsupervised_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers,
+    )
+    test_loader = torch.utils.data.DataLoader(
+        test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers
+    )
+
+    # Take subset of training data for train_classifier
+    try:
+        train_size = args.train_size
+        indices = list(range(len(unsupervised_dataset)))
+        np.random.shuffle(indices)
+        train_indices = indices[:train_size]
+        train_sampler = torch.utils.data.sampler.SubsetRandomSampler(train_indices)
+        train_loader = torch.utils.data.DataLoader(
+            # unsupervised_dataset, batch_size=args.batch_size, sampler=train_sampler, num_workers=args.num_workers,
+            unsupervised_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers,
+        )
+    except AttributeError:  
+        # args.train_size is not defined during train_CPC
+        # train_loader is not needed during train_CPC
+        train_loader = torch.utils.data.DataLoader(
+            unsupervised_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers,
+        )
+
+    return (unsupervised_loader, train_loader, test_loader)
+
+
+def get_blood_clusters_dataloader(args):
+    data_path = os.path.join("data", "bloodmnist")
+    cluster_data_path = os.path.join(data_path, "bloodclusters.csv")
+
+    # Define Transforms
+    transform_train = transforms.Compose(
+        [get_transforms(args, eval=False, aug=aug[args.dataset])])
+    transform_valid = transforms.Compose(
+        [get_transforms(args, eval=True, aug=aug[args.dataset])])
+
+    # Get Datasets
+    unsupervised_dataset = BloodMNISTClusters(
+        root=data_path, split="train", transform=transform_train, download=args.download_dataset, as_rgb=True, cluster_data_path="temp/bloodmnist-unshuffled-tsne-clusters-2.csv", cluster_column='hd-cluster'
+    )
+    test_dataset = BloodMNISTClusters(
+        root=data_path, split="test", transform=transform_valid, download=args.download_dataset, as_rgb=True, cluster_data_path=cluster_data_path, cluster_column='hd-cluster'
+    )
 
     # Get DataLoaders
     unsupervised_loader = torch.utils.data.DataLoader(

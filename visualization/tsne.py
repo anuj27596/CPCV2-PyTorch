@@ -13,20 +13,20 @@ import seaborn as sns
 
 if __name__ == '__main__':
 
-	dataset = 'kdr'
+	dataset = 'bloodmnist'
 	# suffix = '_'.join(['pathological', 'vectors', 'unshuffled'])
-	suffix = '_'.join(['vectors'])
-	num_classes = 5
-	subset = True# and False
+	suffix = '_'.join(['vectors', 'unshuffled'])
+	num_classes = 8
+	subset = True and False
 
-	crop = '224-16'
-	encoder = 'resnet18'
+	crop = '24-0'
+	encoder, D = 'resnet_small', 64
 	norm = 'layer'
-	grid_size = '7'
+	grid_size = '5'
 	pred_directions = '4'
 	cpc_patch_aug = 'True'
 	gray = '_colour'
-	model_num = '5'
+	model_num = '200'
 
 	df_path = f'../TrainedModels/{dataset}/trained_encoder_{encoder}_crop{crop}{gray}_grid{grid_size}_{norm}Norm_{pred_directions}dir_aug{cpc_patch_aug}_{model_num}{dataset}_{suffix}.csv'
 
@@ -36,18 +36,18 @@ if __name__ == '__main__':
 		# df = df[(df['label'] == 0) | (df['label'] == 3) | (df['label'] == 5)]
 		# df = df[df['label'] > 0]
 
-	# X = df[map(str, range(512))].values
+	# X = df[map(str, range(D))].values
 	# X = (X - X.mean(axis=0)) / np.sqrt(X.var(axis=0))
 	
-	# for i in range(512):
+	# for i in range(D):
 	# 	df[str(i)] = X[:, i]
 
 # '''
-	perp = 100
+	perp = 1000
 
 	time_start = time.time()
 	tsne = TSNE(n_components=2, verbose=1, perplexity=perp, n_iter=500)
-	tsne_results = tsne.fit_transform(df[map(str, range(512))].values)
+	tsne_results = tsne.fit_transform(df[map(str, range(D))].values)
 
 	print('t-SNE done! Time elapsed: {} seconds'.format(time.time()-time_start))
 
@@ -63,7 +63,7 @@ if __name__ == '__main__':
 		# legend="full",
 		alpha=0.75
 	)
-	plt.title(f'{dataset} - Perplexity={perp}')
-	plt.savefig(f'{dataset}-{perp}{"-a" if subset else ""}.png')
+	plt.title(f'{dataset} ({encoder}) - Perplexity={perp}')
+	plt.savefig(f'{dataset}-{encoder}-{perp}{"-a" if subset else ""}.png')
 	# plt.show()
 # '''

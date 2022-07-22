@@ -48,7 +48,7 @@ def fwd_pass(x, y, train=False):
 
 
 def train():
-    score_file = open(f'train-plots/retinamnist-pipelined/{args.model_name_ext}-{"sup" if args.fully_supervised else "cpc"}-P_OR.txt', 'a')
+    score_file = open(f'train-plots/bloodclusters/{args.model_name_ext}-{"sup" if args.fully_supervised else "cpc"}.txt', 'a')
 
     best_acc = 0
     best_epoch = 0
@@ -128,6 +128,8 @@ if __name__ == "__main__":
         _, train_loader, test_loader = get_cifar100_dataloader(args)
     elif "mnist" in args.dataset:
         _, train_loader, test_loader = get_medmnist_dataloader(args)
+    elif args.dataset == "bloodclusters":
+        _, train_loader, test_loader = get_blood_clusters_dataloader(args)
 
     # Define network and optimizer for given train_selection
     if not args.fully_supervised:
@@ -147,6 +149,7 @@ if __name__ == "__main__":
         colour = "_colour" if (not args.gray) else ""
         encoder_path = os.path.join("TrainedModels", args.dataset, "trained_encoder")
         encoder_path = f"{encoder_path}_{args.encoder}_crop{args.crop}{colour}_grid{args.grid_size}_{args.norm}Norm_{args.pred_directions}dir_aug{args.cpc_patch_aug}_{args.model_num}{args.model_name_ext}.pt"
+        encoder_path = 'TrainedModels/bloodmnist/trained_encoder_resnet18_crop24-0_colour_grid5_layerNorm_4dir_augTrue_100bloodmnist.pt'
         
         net.load_state_dict(torch.load(encoder_path))
         net.to(args.device)

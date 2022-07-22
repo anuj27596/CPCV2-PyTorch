@@ -11,7 +11,7 @@ def argparser():
     parser.add_argument('--sched_step_size',  type=int,   metavar='', default=100,        help="Schedular Step Size")
     parser.add_argument('--sched_milestones', type=str,   metavar='', default="",         help="For using optimizer with MultiStepLR - Takes a string of comma seperated milestones '50,100,150'")
     parser.add_argument('--num_workers',      type=int,   metavar='', default=1,          help="Number of workers to be used in dataloader")
-    parser.add_argument('--batch_size',       type=int,   metavar='', default=100,        help="Batch Size")
+    parser.add_argument('--batch_size',       type=int,   metavar='', default=128,        help="Batch Size")
     parser.add_argument('--lr',               type=float, metavar='', default=0.1,        help="Learning Rate")
     parser.add_argument('--lr_gamma',         type=float, metavar='', default=0.1,        help="Gamma value for scheduler, i.e. how much to multiply by")
     parser.add_argument('--crop',             type=str,   metavar='', default="0-0",      help="CropSize-Padding (i.e. 64-2 would crop to 64 pixels with 2 pixels padding)")
@@ -51,6 +51,8 @@ def argparser():
         args.num_classes = 5
     elif args.dataset == "bloodmnist":
         args.num_classes = 8
+    elif args.dataset == "bloodclusters":
+        args.num_classes = 8
     elif args.dataset == "kdr":
         args.num_classes = 5
     else:
@@ -62,7 +64,7 @@ def argparser():
     if args.encoder not in ("resnet14", "resnet18", "resnet28", 
                             "resnet34", "resnet41", "resnet50", 
                             "resnet92", "resent101", "resnet143", 
-                            "resnet152", "mobilenetV2"
+                            "resnet152", "mobilenetV2", "resnet_small"
                             ) and args.encoder[:10] != "wideresnet":
         raise Exception("Invalid Encoder Input")
 
@@ -77,7 +79,7 @@ def argparser():
             args.crop = "64-0"
         elif args.dataset in ("cifar10", "cifar100"):
             args.crop = "32-4" 
-        elif "mnist" in args.dataset:
+        elif "mnist" in args.dataset or args.dataset == "bloodclusters":
             args.crop = "24-0" 
         elif args.dataset == "kdr":
             args.crop = "224-16"
